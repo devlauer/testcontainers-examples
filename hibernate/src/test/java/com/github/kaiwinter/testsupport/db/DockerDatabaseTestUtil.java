@@ -21,7 +21,8 @@ import org.hibernate.jdbc.Work;
 import org.junit.Assume;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.jdbc.ext.ScriptUtils;
+import org.testcontainers.ext.ScriptUtils;
+import org.testcontainers.jdbc.ContainerLessJdbcDelegate;
 import org.xml.sax.InputSource;
 
 import com.google.common.base.Charsets;
@@ -95,7 +96,7 @@ public abstract class DockerDatabaseTestUtil {
       throws ScriptException {
       boolean continueOnError = false;
       boolean ignoreFailedDrops = true;
-      ScriptUtils.executeSqlScript(connection, scriptName, sqlString, continueOnError, ignoreFailedDrops, //
+      ScriptUtils.executeDatabaseScript(new ContainerLessJdbcDelegate(connection), scriptName, sqlString, continueOnError, ignoreFailedDrops, //
          ScriptUtils.DEFAULT_COMMENT_PREFIX, ScriptUtils.DEFAULT_STATEMENT_SEPARATOR,
          ScriptUtils.DEFAULT_BLOCK_COMMENT_START_DELIMITER, ScriptUtils.DEFAULT_BLOCK_COMMENT_END_DELIMITER);
    }

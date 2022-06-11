@@ -7,8 +7,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.Data;
+
 @Entity
 @Table(name = "user")
+@Data
 public class User {
 
    @Id
@@ -22,27 +25,4 @@ public class User {
    @Column(name = "login_count", nullable = false)
    private int loginCount;
 
-   public int getId() {
-      return this.id;
-   }
-
-   public void setId(int id) {
-      this.id = id;
-   }
-
-   public String getUsername() {
-      return this.username;
-   }
-
-   public void setUsername(String username) {
-      this.username = username;
-   }
-
-   public int getLoginCount() {
-      return loginCount;
-   }
-
-   public void setLoginCount(int loginCount) {
-      this.loginCount = loginCount;
-   }
 }

@@ -17,7 +17,8 @@ import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.core.spi.LoadableExtension;
 import org.jboss.arquillian.core.spi.ServiceLoader;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.jdbc.ext.ScriptUtils;
+import org.testcontainers.jdbc.ContainerLessJdbcDelegate;
+import org.testcontainers.ext.ScriptUtils;
 
 import com.github.kaiwinter.testsupport.arquillian.WildflyArquillianRemoteConfiguration.ContainerConfiguration;
 import com.github.kaiwinter.testsupport.arquillian.WildflyArquillianRemoteConfiguration.ContainerConfiguration.ServletProtocolDefinition;
@@ -55,8 +56,9 @@ public final class WildflyMariaDBDockerExtension implements LoadableExtension {
        * @param serviceLoader
        */
       public void registerInstance(@Observes ContainerRegistry registry, ServiceLoader serviceLoader) {
-         GenericContainer dockerContainer = new GenericContainer(DOCKER_IMAGE)
-            .withExposedPorts(WILDFLY_MANAGEMENT_PORT);
+         @SuppressWarnings("resource")
+		GenericContainer<?> dockerContainer = new GenericContainer<>(DOCKER_IMAGE)
+            .withExposedPorts(WILDFLY_MANAGEMENT_PORT,WILDFLY_HTTP_PORT,MARIADB_PORT);
          dockerContainer.start();
 
          configureArquillianForRemoteWildfly(dockerContainer, registry);
@@ -64,11 +66,11 @@ public final class WildflyMariaDBDockerExtension implements LoadableExtension {
          setupDb(dockerContainer);
       }
 
-      private void configureArquillianForRemoteWildfly(GenericContainer dockerContainer, ContainerRegistry registry) {
+      private void configureArquillianForRemoteWildfly(GenericContainer<?> dockerContainer, ContainerRegistry registry) {
          Integer wildflyHttpPort = dockerContainer.getMappedPort(WILDFLY_HTTP_PORT);
          Integer wildflyManagementPort = dockerContainer.getMappedPort(WILDFLY_MANAGEMENT_PORT);
 
-         String containerIpAddress = dockerContainer.getContainerIpAddress();
+         String containerIpAddress = dockerContainer.getHost();
          Container arquillianContainer = registry.getContainers().iterator().next();
          ContainerDef containerConfiguration = arquillianContainer.getContainerConfiguration();
          containerConfiguration.property(ContainerConfiguration.MANAGEMENT_ADDRESS_KEY, containerIpAddress);
@@ -83,15 +85,15 @@ public final class WildflyMariaDBDockerExtension implements LoadableExtension {
          protocolConfiguration.property(ServletProtocolDefinition.PORT_KEY, String.valueOf(wildflyHttpPort));
       }
 
-      private void setupDb(GenericContainer dockerContainer) {
-         String containerIpAddress = dockerContainer.getContainerIpAddress();
+      private void setupDb(GenericContainer<?> dockerContainer) {
+         String containerIpAddress = dockerContainer.getHost();
          Integer port3306 = dockerContainer.getMappedPort(MARIADB_PORT);
          String connectionString = "jdbc:mysql://" + containerIpAddress + ":" + port3306 + "/test";
 
          try (Connection connection = DriverManager.getConnection(connectionString, "admin", "admin");) {
             URL resource = Resources.getResource(DDL_FILE);
             String sql = Resources.toString(resource, Charsets.UTF_8);
-            ScriptUtils.executeSqlScript(connection, "", sql);
+            ScriptUtils.executeDatabaseScript(new ContainerLessJdbcDelegate(connection), "", sql);
          } catch (SQLException | ScriptException | IOException e) {
             throw new RuntimeException(e);
          }
