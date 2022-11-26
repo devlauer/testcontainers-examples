@@ -18,7 +18,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testcontainers.containers.BrowserWebDriverContainer;
 
 import com.github.kaiwinter.testsupport.arquillian.WildflyDockerExtension;
-import com.github.kaiwinter.user.view.testcontainers.TestcontainersHelper;
 
 @RunWith(Arquillian.class)
 public class UserViewBeforeClassBrowserTest extends BaseViewTest {
@@ -29,11 +28,9 @@ public class UserViewBeforeClassBrowserTest extends BaseViewTest {
 	@SuppressWarnings("resource")
 	@BeforeClass
 	public static void setup() {
-		chrome = new BrowserWebDriverContainer<>().withCapabilities(new ChromeOptions())
-				.withNetwork(TestcontainersHelper.network);
+		chrome = new BrowserWebDriverContainer<>().withCapabilities(new ChromeOptions());
 		chrome.start();
-		firefox = new BrowserWebDriverContainer<>().withCapabilities(new FirefoxOptions())
-				.withNetwork(TestcontainersHelper.network);
+		firefox = new BrowserWebDriverContainer<>().withCapabilities(new FirefoxOptions());
 		firefox.start();
 	}
 
@@ -52,7 +49,7 @@ public class UserViewBeforeClassBrowserTest extends BaseViewTest {
 	}
 
 	private void testTableData(RemoteWebDriver driver) {
-		String address = WildflyDockerExtension.getNetworkBaseUrl() + "users.xhtml";
+		String address = WildflyDockerExtension.getBaseUrl() + "users.xhtml";
 		driver.get(address);
 		WebElement datatable = driver.findElement(By.className("ui-datatable-data"));
 		List<WebElement> datatableRows = datatable.findElements(By.className("ui-widget-content"));

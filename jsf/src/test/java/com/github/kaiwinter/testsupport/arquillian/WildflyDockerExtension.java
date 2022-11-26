@@ -1,5 +1,7 @@
 package com.github.kaiwinter.testsupport.arquillian;
 
+import java.time.Duration;
+
 import org.jboss.arquillian.config.descriptor.api.ContainerDef;
 import org.jboss.arquillian.config.descriptor.api.ProtocolDef;
 import org.jboss.arquillian.container.spi.Container;
@@ -13,7 +15,6 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import com.github.kaiwinter.testsupport.arquillian.WildflyArquillianRemoteConfiguration.ContainerConfiguration;
 import com.github.kaiwinter.testsupport.arquillian.WildflyArquillianRemoteConfiguration.ContainerConfiguration.ServletProtocolDefinition;
-import com.github.kaiwinter.user.view.testcontainers.TestcontainersHelper;
 
 /**
  * Starts a docker container and configures Arquillian to use Wildfly in the
@@ -23,7 +24,6 @@ public final class WildflyDockerExtension implements LoadableExtension {
 
 	/** The base URL of Wildfly in the Docker container. */
 	private static String baseUrl;
-	private static String networkBaseUrl;
 
 	@Override
 	public void register(ExtensionBuilder builder) {
@@ -54,10 +54,9 @@ public final class WildflyDockerExtension implements LoadableExtension {
 									.cmd("/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement",
 											"0.0.0.0")
 									.build()))
-					.withExposedPorts(WILDFLY_MANAGEMENT_PORT, WILDFLY_HTTP_PORT)
-					.withNetwork(TestcontainersHelper.network).withNetworkAliases("appserver");
+					.withExposedPorts(WILDFLY_MANAGEMENT_PORT, WILDFLY_HTTP_PORT).withStartupTimeout(Duration.ofSeconds(30));
+					//.withNetwork(TestcontainersHelper.network).withNetworkAliases("appserver");
 			dockerContainer.start();
-
 			configureArquillianForRemoteWildfly(dockerContainer, registry);
 		}
 
@@ -82,7 +81,6 @@ public final class WildflyDockerExtension implements LoadableExtension {
 
 			WildflyDockerExtension.baseUrl = "http://" + containerIpAddress + ":" + wildflyHttpPort
 					+ "/testcontainers-jsf/";
-			WildflyDockerExtension.networkBaseUrl = "http://appserver:8080/testcontainers-jsf/";
 		}
 
 	}
@@ -91,8 +89,5 @@ public final class WildflyDockerExtension implements LoadableExtension {
 		return baseUrl;
 	}
 
-	public static String getNetworkBaseUrl() {
-		return networkBaseUrl;
-	}
 
 }
