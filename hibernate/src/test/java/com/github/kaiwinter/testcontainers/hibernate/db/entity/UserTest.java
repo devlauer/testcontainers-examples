@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,14 +16,14 @@ import org.slf4j.LoggerFactory;
  * MySQL database. Hibernate then creates a Persistence Unit for this
  * docker-database.
  */
-public final class UserTest {
+final class UserTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserTest.class);
 
 	private static EntityManager entityManager = Persistence.createEntityManagerFactory("TestPU").createEntityManager();
 
 	@Test
-	public void testSaveAndLoad() {
+	void testSaveAndLoad() {
 		User user = new User();
 		user.setUsername("user 1");
 
