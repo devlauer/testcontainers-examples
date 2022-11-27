@@ -13,14 +13,14 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.ScopeType;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.github.kaiwinter.testcontainers.wildfly.core.UserService;
 import com.github.kaiwinter.testcontainers.wildfly.db.entity.User;
@@ -34,7 +34,7 @@ import com.github.kaiwinter.testsupport.db.DockerDatabaseTestUtil;
  * Wildfly 10/MariaDB and inserts some test data. Arquillian then deploys to
  * that server and runs this tests.
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public final class UserRepositoryTest {
 
 	@Inject
@@ -67,7 +67,7 @@ public final class UserRepositoryTest {
 	 * Loads a user by its ID.
 	 */
 	@Test
-	public void testFind() {
+	void testFind() {
 		DockerDatabaseTestUtil.insertDbUnitTestdata(entityManager, getClass().getResourceAsStream("/testdata.xml"));
 		User user = userRepository.findByUsername("admin");
 		assertEquals(3, user.getLoginCount());
@@ -77,7 +77,7 @@ public final class UserRepositoryTest {
 	 * Loads all users and counts the result.
 	 */
 	@Test
-	public void testFindAll() {
+	void testFindAll() {
 		DockerDatabaseTestUtil.insertDbUnitTestdata(entityManager, getClass().getResourceAsStream("/testdata.xml"));
 		Collection<User> findAll = userRepository.findAll();
 		assertEquals(3, findAll.size());
@@ -87,7 +87,7 @@ public final class UserRepositoryTest {
 	 * Deletes one User and counts the remaining users.
 	 */
 	@Test
-	public void testDelete() throws NotSupportedException, SystemException {
+	void testDelete() throws NotSupportedException, SystemException {
 		DockerDatabaseTestUtil.insertDbUnitTestdata(entityManager, getClass().getResourceAsStream("/testdata.xml"));
 		transaction.begin();
 		User user = userRepository.findByUsername("admin");
@@ -100,7 +100,7 @@ public final class UserRepositoryTest {
 	 * Creates a new User and counts the number of total users.
 	 */
 	@Test
-	public void testSave() throws NotSupportedException, SystemException {
+	void testSave() throws NotSupportedException, SystemException {
 		DockerDatabaseTestUtil.insertDbUnitTestdata(entityManager, getClass().getResourceAsStream("/testdata.xml"));
 		transaction.begin();
 		User user = new User();
