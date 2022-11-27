@@ -5,11 +5,11 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -19,14 +19,14 @@ import org.testcontainers.containers.BrowserWebDriverContainer;
 
 import com.github.kaiwinter.testsupport.arquillian.WildflyDockerExtension;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class UserViewBeforeClassBrowserTest extends BaseViewTest {
 
 	static BrowserWebDriverContainer<?> chrome;
 	static BrowserWebDriverContainer<?> firefox;
 
 	@SuppressWarnings("resource")
-	@BeforeClass
+	@BeforeAll
 	public static void setup() {
 		chrome = new BrowserWebDriverContainer<>().withCapabilities(new ChromeOptions());
 		chrome.start();
@@ -36,14 +36,14 @@ public class UserViewBeforeClassBrowserTest extends BaseViewTest {
 
 	@Test
 	@RunAsClient
-	public void testBrowserCallFirefox() {
+	void testBrowserCallFirefox() {
 		RemoteWebDriver driverFirefox = firefox.getWebDriver();
 		testTableData(driverFirefox);
 	}
 
 	@Test
 	@RunAsClient
-	public void testBrowserCallChrome() {
+	void testBrowserCallChrome() {
 		RemoteWebDriver driverChrome = chrome.getWebDriver();
 		testTableData(driverChrome);
 	}
@@ -56,7 +56,7 @@ public class UserViewBeforeClassBrowserTest extends BaseViewTest {
 		assertEquals(5, datatableRows.size());
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void tearDown() {
 		chrome.stop();
 		firefox.stop();

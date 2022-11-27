@@ -3,9 +3,6 @@
 	<artifactId>wildfly-mariadb</artifactId>
 	<name>testcontainers-wildfly-mariadb</name>
 	<description>Example for testing a hibernate persistence layer</description>
-	<properties>
-		<junit.version>5.9.1</junit.version>
-	</properties>
 	<parent>
 		<groupId>com.github.kaiwinter</groupId>
 		<artifactId>testcontainers-examples</artifactId>
