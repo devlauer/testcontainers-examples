@@ -3,4 +3,4 @@ CREATE TABLE user (
 	username LONGTEXT NOT NULL,
 	login_count INTEGER NOT NULL DEFAULT 0,
 	PRIMARY KEY (id)
-) ENGINE=InnoDB;
+);

@@ -1,0 +1,31 @@
+<datasources>
+
+    <datasource jta="true" jndi-name="java:jboss/datasources/MyApplicationDS" pool-name="MyApplicationDS" enabled="true" use-ccm="true" use-java-context="true">
+        <connection-url>jdbc:mariadb://mariadbcontainer/test?autoReconnect=true&amp;useUnicode=yes&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;connectTimeout=1000&amp;allowMasterDownConnections=true&amp;maxReconnects=2</connection-url>
+        <driver>mytestapp.war_org.mariadb.jdbc.Driver_3_1</driver>
+
+        <transaction-isolation>TRANSACTION_REPEATABLE_READ</transaction-isolation>
+        <pool>
+            <min-pool-size>10</min-pool-size>
+            <max-pool-size>100</max-pool-size>
+            <prefill>true</prefill>
+        </pool>
+        <security>
+            <user-name>admin</user-name>
+            <password>admin</password>
+        </security>
+        <validation>
+            <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker"/>
+            <check-valid-connection-sql>/* ping */ SELECT 1 from dual</check-valid-connection-sql>
+            <background-validation>true</background-validation>
+            <use-fast-fail>true</use-fast-fail>
+            <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter"/>
+        </validation>
+        <statement>
+            <prepared-statement-cache-size>64</prepared-statement-cache-size>
+            <share-prepared-statements>true</share-prepared-statements>
+        </statement>
+    </datasource>
+
+
+</datasources>

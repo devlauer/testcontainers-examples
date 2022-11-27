@@ -16,7 +16,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.ScopeType;
@@ -48,23 +47,20 @@ public final class UserRepositoryTest {
 	private EntityManager entityManager;
 
 	@Deployment
-	public static EnterpriseArchive createDeployment() {
+	public static WebArchive createDeployment() {
+		File[] pomDependencies = Maven.resolver() //
+				.loadPomFromFile("pom.xml").importDependencies(ScopeType.TEST) //
+				.resolve().withTransitivity().asFile();
+
 		WebArchive war = ShrinkWrap.create(WebArchive.class) //
 				.addClasses(UserService.class, UserRepository.class, User.class) //
 				.addClasses(UserRepositoryTest.class, DockerDatabaseTestUtil.class) //
 				.addAsResource("META-INF/persistence.xml") //
 				.addAsResource("testdata.xml") //
-				.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+				.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml").addAsLibraries(pomDependencies);
 
-		File[] pomDependencies = Maven.resolver() //
-				.loadPomFromFile("pom.xml").importDependencies(ScopeType.TEST) //
-				.resolve().withTransitivity().asFile();
 
-		EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class) //
-				.addAsModule(war) //
-				.addAsLibraries(pomDependencies);
-
-		return ear;
+		return war;
 	}
 
 	/**
